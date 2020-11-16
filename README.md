@@ -1,5 +1,5 @@
 # cat_voleyball
-<<<<<<< HEAD
+Simple game build using Amethyst.
 
 ## How to run
 
@@ -20,6 +20,3 @@ Mac OS X users may explicitly choose `"metal"` with the following command:
 ```bash
 cargo run --no-default-features --features "metal"
 ```
-=======
-Simple game build using Amethyst.
->>>>>>> 16e22fa7f32651e30ccef7d139c2ff58e3e52cc5
