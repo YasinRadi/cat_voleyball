@@ -1,6 +1,5 @@
 use amethyst::{
     core::{
-        SystemDesc,
         timing::Time,
         transform::Transform,
     },
@@ -8,7 +7,6 @@ use amethyst::{
     ecs::prelude::{
         Join,
         Read,
-        World,
         System,
         SystemData,
         WriteStorage,
