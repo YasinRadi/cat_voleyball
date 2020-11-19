@@ -1,6 +1,7 @@
+mod systems;
 mod catvolleyball;
 
-use catvolleyball::CatVolleyball;
+use crate::catvolleyball::CatVolleyball;
 use amethyst::{
     prelude::*,
     utils::application_root_dir,
@@ -29,6 +30,10 @@ fn main() -> amethyst::Result<()> {
 
 
     let game_data = GameDataBuilder::default()
+        .with_bundle(TransformBundle::new())?
+        .with_bundle(input_bundle)?
+        .with(systems::MoveBallSystem, "ball_system", &[])
+        .with(systems::PlayerSystem, "player_system", &["input_system"])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
@@ -36,9 +41,7 @@ fn main() -> amethyst::Result<()> {
                         .with_clear([0.0, 0.0, 0.0, 1.0]),
                 )
                 .with_plugin(RenderFlat2D::default()),
-        )?
-        .with_bundle(TransformBundle::new())?
-        .with_bundle(input_bundle)?;
+        )?;
 
     let mut game = Application::new(assets_dir, CatVolleyball, game_data)?;
     game.run();

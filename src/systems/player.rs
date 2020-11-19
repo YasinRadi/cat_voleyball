@@ -1,6 +1,6 @@
 use amethyst::{
     derive::SystemDesc,
-    core::{Transform, SystemDesc},
+    core::{Transform, Time, SystemDesc},
     input::{InputHandler, StringBindings},
     ecs::{
         Join,
@@ -27,7 +27,7 @@ impl<'s> System<'s> for PlayerSystem {
         Read<'s, InputHandler<StringBindings>>,
     );
 
-    fn run(&mut self, (mut transforms, players, input): Self::SystemData) {
+    fn run(&mut self, (mut transforms, players, time, input): Self::SystemData) {
         for (player, transform) in (&players, &mut transforms).join() {
             let movement = match player.side {
                 Side::Left => input.axis_value("left_player"),
@@ -35,9 +35,7 @@ impl<'s> System<'s> for PlayerSystem {
             };
 
             if let Some(mv_amount) = movement {
-                let scaled_amount = (
-                    PLAYER_SPEED * time.delta_seconds() * mv_amount
-                ) as f32;
+                let scaled_amount = (PLAYER_SPEED * time.delta_seconds() * mv_amount) as f32;
                 let player_x = transform.translation().x;
                 let player_left_limit = match player.side {
                     Side::Left => 0.0,
@@ -47,11 +45,7 @@ impl<'s> System<'s> for PlayerSystem {
                 transform.set_translation_x(
                     (player_x + scaled_amount)
                         .max(player_left_limit + PLAYER_WIDTH / 2.0)
-                        .min(
-                            player_left_limit + 
-                            ARENA_WIDTH / 2.0 - 
-                            PLAYER_WIDTH / 2.0
-                        ),
+                        .min(player_left_limit + ARENA_WIDTH / 2.0 - PLAYER_WIDTH / 2.0),
                 );
             }
         }
