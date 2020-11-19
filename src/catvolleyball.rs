@@ -10,7 +10,7 @@ use amethyst::{
         SpriteSheet,
         SpriteRender,
         SpriteSheetFormat
-    }
+    },
 };
 
 pub const ARENA_HEIGHT: f32 = 500.0;
