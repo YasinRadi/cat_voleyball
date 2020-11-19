@@ -14,6 +14,8 @@ use amethyst::{
 
 use crate::catvolleyball::{Player, Side, ARENA_WIDTH, PLAYER_WIDTH};
 
+const PLAYER_SPEED: f32 = 60.0;
+
 #[derive(SystemDesc)]
 pub struct PlayerSystem;
 
@@ -21,6 +23,7 @@ impl<'s> System<'s> for PlayerSystem {
     type SystemData = (
         WriteStorage<'s, Transform>,
         ReadStorage<'s, Player>,
+        Read<'s, Time>,
         Read<'s, InputHandler<StringBindings>>,
     );
 
@@ -32,14 +35,24 @@ impl<'s> System<'s> for PlayerSystem {
             };
 
             if let Some(mv_amount) = movement {
-                if mv_amount != 0.0 {
-                    let side_name = match player.side {
-                        Side::Left => "left",
-                        Side::Right => "right",
-                    };
-
-                    println!("Side {:?} moving {}", side_name, mv_amount);
-                }
+                let scaled_amount = (
+                    PLAYER_SPEED * time.delta_seconds() * mv_amount
+                ) as f32;
+                let player_x = transform.translation().x;
+                let player_left_limit = match player.side {
+                    Side::Left => 0.0,
+                    Side::Right => ARENA_WIDTH / 2.0,
+                };
+                
+                transform.set_translation_x(
+                    (player_x + scaled_amount)
+                        .max(player_left_limit + PLAYER_WIDTH / 2.0)
+                        .min(
+                            player_left_limit + 
+                            ARENA_WIDTH / 2.0 - 
+                            PLAYER_WIDTH / 2.0
+                        ),
+                );
             }
         }
     }
