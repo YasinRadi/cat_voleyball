@@ -34,6 +34,11 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(input_bundle)?
         .with(systems::MoveBallSystem, "ball_system", &[])
         .with(systems::PlayerSystem, "player_system", &["input_system"])
+        .with(
+            systems::CollisionSystem,
+            "collision_system",
+            &["player_system", "ball_system"],
+        )
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
