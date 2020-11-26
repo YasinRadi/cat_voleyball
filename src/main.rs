@@ -1,17 +1,20 @@
+mod audio;
 mod systems;
 mod catvolleyball;
 
+use crate::audio::Music;
 use crate::catvolleyball::CatVolleyball;
 use amethyst::{
     prelude::*,
     ui::{RenderUi, UiBundle},
     utils::application_root_dir,
     core::transform::TransformBundle,
+    audio::{AudioBundle, DjSystemDesc},
     input::{InputBundle, StringBindings},
     renderer::{
-        plugins::{RenderFlat2D, RenderToWindow},
-        types::DefaultBackend,
         RenderingBundle,
+        types::DefaultBackend,
+        plugins::RenderToWindow,
     },
 };
 
@@ -34,6 +37,14 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(TransformBundle::new())?
         .with_bundle(input_bundle)?
         .with_bundle(UiBundle::<StringBindings>::new())?
+        .with_bundle(AudioBundle::default())?
+        .with_system_desc(
+            DjSystemDesc::new(
+                |music: &mut Music| music.music.next()
+            ),
+            "dj_system",
+            &[],
+        )
         .with(systems::MoveBallSystem, "ball_system", &[])
         .with(systems::PlayerSystem, "player_system", &["input_system"])
         .with(systems::WinnerSystem, "winner_system", &["ball_system"])

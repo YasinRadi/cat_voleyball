@@ -1,11 +1,12 @@
 use amethyst::{
-    core::{Transform, Time},
     derive::SystemDesc,
+    core::{Transform, timing::Time},
     input::{InputHandler, StringBindings},
     ecs::{
         Join,
         Read,
         System,
+        SystemData,
         ReadStorage,
         WriteStorage,
     },
