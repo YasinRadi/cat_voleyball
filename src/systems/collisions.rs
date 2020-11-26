@@ -9,7 +9,6 @@ use amethyst::{
     ecs::prelude::{
         Join,
         Read,
-        World,
         System,
         ReadExpect,
         SystemData,

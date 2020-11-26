@@ -8,7 +8,6 @@ use amethyst::{
         Join,
         Read,
         Write,
-        World,
         System,
         ReadExpect,
         SystemData,

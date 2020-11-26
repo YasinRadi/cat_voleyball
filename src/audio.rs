@@ -36,24 +36,24 @@ fn load_audio_track(loader: &Loader, world: &World, file: &str) -> SourceHandle 
     )
 }
 
-fn play_sound(storage: &AssetStorage<Source>, output: Option<&Output>, sound: SourceHandle) {
+fn play_sound(storage: &AssetStorage<Source>, output: Option<&Output>, sound: &SourceHandle) {
     if let Some(ref output) = output.as_ref() {
-        if let Some(sound) = storage.get(&sound) {
+        if let Some(sound) = storage.get(sound) {
             output.play_once(sound, 1.0);
         }
     }
 }
 
 pub fn play_collision(sounds: &Sounds, storage: &AssetStorage<Source>, output: Option<&Output>) {
-    play_sound(storage, output, sounds.collision_sfx)
+    play_sound(storage, output, &sounds.collision_sfx)
 }
 
 pub fn play_score(sounds: &Sounds, storage: &AssetStorage<Source>, output: Option<&Output>) {
-    play_sound(storage, output, sounds.score_sfx)
+    play_sound(storage, output, &sounds.score_sfx)
 }
 
 /// Initializes the audio system
-pub fn initialize_audio(world: &World) {
+pub fn initialize_audio(world: &mut World) {
     use crate::catvolleyball::{AUDIO_COLLISION, AUDIO_MUSIC, AUDIO_SCORE};
 
     let (sound_effects, music) = {

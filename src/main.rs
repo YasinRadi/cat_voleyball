@@ -38,8 +38,10 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(input_bundle)?
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(AudioBundle::default())?
-        .with(
-            DjSystemDesc::new(|music: &mut Music| music.music.next()),
+        .with_system_desc(
+            DjSystemDesc::new(
+                |music: &mut Music| music.music.next()
+            ),
             "dj_system",
             &[],
         )
