@@ -20,6 +20,8 @@ use amethyst::{
     },
 };
 
+use crate::audio::initialize_audio;
+
 // Frame params
 pub const ARENA_HEIGHT: f32 = 500.0;
 pub const ARENA_WIDTH: f32 = 500.0;
@@ -32,6 +34,14 @@ pub const PLAYER_HEIGHT: f32 = 22.0;
 pub const BALL_VELOCITY_X: f32 = 30.0;
 pub const BALL_VELOCITY_Y: f32 = 0.0;
 pub const BALL_RADIUS: f32 = 4.0;
+
+// Audio params
+pub const AUDIO_MUSIC: &'static [&'static str] = &[
+    "./audio/Computer_Music_All-Stars_-_Wheres_My_Jetpack.ogg",
+    "./audio/Computer_Music_All-Stars_-_Albatross_v2.ogg",
+];
+pub const AUDIO_COLLISION: &'static str = "./audio/collision.ogg";
+pub const AUDIO_SCORE: &'static str = "./audio/score.ogg";
 
 fn load_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
     let texture_handle = {
@@ -252,5 +262,6 @@ impl SimpleState for CatVolleyball {
         initialize_ball(world, sprite_sheet_handle.clone());
         initialize_players(world, sprite_sheet_handle);
         initialize_scoreboard(world);
+        initialize_audio(world);
     }
 }

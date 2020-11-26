@@ -1,14 +1,14 @@
 use amethyst::{
-    core::{
-        transform::Transform,
-        SystemDesc,
-    },
-    derive::SystemDesc,
     ui::UiText,
+    derive::SystemDesc,
+    assets::AssetStorage,
+    core::transform::Transform,
+    audio::{output::Output, Source},
     ecs::prelude::{
         Join,
-        World,
+        Read,
         Write,
+        World,
         System,
         ReadExpect,
         SystemData,
@@ -16,6 +16,8 @@ use amethyst::{
     },
 };
 
+use std::ops::Deref;
+use crate::audio::{play_score, Sounds};
 use crate::catvolleyball::{Ball, ScoreBoard, ScoreText, ARENA_HEIGHT, ARENA_WIDTH};
 
 #[derive(SystemDesc)]
@@ -28,10 +30,17 @@ impl<'s> System<'s> for WinnerSystem {
         WriteStorage<'s, UiText>,
         Write<'s, ScoreBoard>,
         ReadExpect<'s, ScoreText>,
+        Read<'s, AssetStorage<Source>>,
+        ReadExpect<'s, Sounds>,
+        Option<Read<'s, Output>>,
     );
 
     fn run(
-        &mut self, (mut balls, mut locals, mut ui_text, mut scores, score_text): Self::SystemData) {
+        &mut self, 
+        (mut balls, mut locals, mut ui_text, 
+        mut scores, score_text, storage, 
+        sounds, audio_output): Self::SystemData,
+    ) {
         for (ball, transform) in (&mut balls, &mut locals).join() {
             let ball_x = transform.translation().x;
             let ball_y = transform.translation().y;
@@ -61,6 +70,8 @@ impl<'s> System<'s> for WinnerSystem {
                 // invert direction
                 ball.velocity[0] = -ball.velocity[0];
                 ball.velocity[1] = 0.0;
+
+                play_score(&*sounds, &storage, audio_output.as_ref().map(|o| o.deref()));
             }
         }
     }

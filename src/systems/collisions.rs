@@ -2,16 +2,24 @@ extern crate rand;
 
 use rand::Rng;
 use amethyst::{
-    core::{transform::Transform},
     derive::SystemDesc,
+    assets::AssetStorage,
+    core::transform::Transform,
+    audio::{output::Output, Source},
     ecs::prelude::{
         Join,
+        Read,
+        World,
         System,
+        ReadExpect,
+        SystemData,
         ReadStorage,
         WriteStorage,
     },
 };
 
+use std::ops::Deref;
+use crate::audio::{play_collision, Sounds};
 use crate::catvolleyball::{Ball, Player, Side, ARENA_HEIGHT, ARENA_WIDTH};
 
 
@@ -27,9 +35,14 @@ impl<'s> System<'s> for CollisionSystem {
         WriteStorage<'s, Ball>,
         ReadStorage<'s, Player>,
         ReadStorage<'s, Transform>,
+        Read<'s, AssetStorage<Source>>,
+        ReadExpect<'s, Sounds>,
+        Option<Read<'s, Output>>,
     );
 
-    fn run(&mut self, (mut balls, players, transforms): Self::SystemData) {
+    fn run(
+        &mut self, 
+        (mut balls, players, transforms, storage, sounds, audio_output): Self::SystemData) {
         // Handle ball collisions and velocity check
         for (ball, transform) in (&mut balls, &transforms).join() {
             let ball_x = transform.translation().x;
@@ -40,10 +53,13 @@ impl<'s> System<'s> for CollisionSystem {
                 ball.velocity[1] = -ball.velocity[1];
             } else if ball_y >= (ARENA_HEIGHT - ball.radius) && ball.velocity[1] > 0.0 {
                 ball.velocity[1] = -ball.velocity[1];
+                play_collision(&*sounds, &storage, audio_output.as_ref().map(|o| o.deref()));
             } else if ball_x <= (ball.radius) && ball.velocity[0] < 0.0 {
                 ball.velocity[0] = -ball.velocity[0];
+                play_collision(&*sounds, &storage, audio_output.as_ref().map(|o| o.deref()));
             } else if ball_x >= (ARENA_WIDTH - ball.radius) && ball.velocity[0] > 0.0 {
                 ball.velocity[0] = -ball.velocity[0];
+                play_collision(&*sounds, &storage, audio_output.as_ref().map(|o| o.deref()));
             }
 
             for (player, player_transform) in (&players, &transforms).join() {
@@ -74,6 +90,8 @@ impl<'s> System<'s> for CollisionSystem {
                                     rng.gen_range(0.6, 1.4);
                             }
                         }
+
+                        play_collision(&*sounds, &storage, audio_output.as_ref().map(|o| o.deref()));
                     }
                 }
             }
